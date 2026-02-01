@@ -110,3 +110,7 @@ this._timeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 10, () => {
 ```
 
 Change `10` to your preferred number of seconds.
+
+## Credits
+
+Built with assistance from Claude (Anthropic)
