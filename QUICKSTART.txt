@@ -14,7 +14,7 @@
    • Wayland: Log out and log back in
 
 4. Enable the extension:
-   gnome-extensions enable local-ip-address@mohamedami
+   gnome-extensions enable local-ip@mradime
 
 That's it! Your IP address will appear in the top panel.
 
@@ -39,8 +39,8 @@ That's it! Your IP address will appear in the top panel.
 
 🔧 MANUAL INSTALLATION (if script doesn't work):
 
-mkdir -p ~/.local/share/gnome-shell/extensions/local-ip-address@mohamedami
-cp metadata.json extension.js ~/.local/share/gnome-shell/extensions/local-ip-address@mohamedami/
+mkdir -p ~/.local/share/gnome-shell/extensions/local-ip@mradime
+cp metadata.json extension.js ~/.local/share/gnome-shell/extensions/local-ip@mradime/
 # Then restart GNOME Shell and enable as above
 
 
@@ -50,10 +50,10 @@ List all extensions:
   gnome-extensions list
 
 Check extension status:
-  gnome-extensions info local-ip-address@mohamedami
+  gnome-extensions info local-ip@mradime
 
 Disable extension:
-  gnome-extensions disable local-ip-address@mohamedami
+  gnome-extensions disable local-ip@mradime
 
 View logs:
   journalctl -f /usr/bin/gnome-shell
@@ -73,7 +73,7 @@ Extension not showing after restart?
   → Check: gnome-extensions list | grep local-ip
 
 Extension showing but disabled?
-  → Run: gnome-extensions enable local-ip-address@mohamedami
+  → Run: gnome-extensions enable local-ip@mradime
 
 Shows "Error" or "No IP"?
   → Check: ip -o addr show scope global

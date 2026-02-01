@@ -8,13 +8,15 @@ Click the IP address to copy it to your clipboard.
 ### Method 1: Manual Installation (Recommended for first-time extension creators)
 
 1. **Create the extension directory:**
+
    ```bash
-   mkdir -p ~/.local/share/gnome-shell/extensions/local-ip-address@mohamedami
+   mkdir -p ~/.local/share/gnome-shell/extensions/local-ip@mradime
    ```
 
 2. **Copy the extension files:**
+
    ```bash
-   cp metadata.json extension.js ~/.local/share/gnome-shell/extensions/local-ip-address@mohamedami/
+   cp metadata.json extension.js ~/.local/share/gnome-shell/extensions/local-ip@mradime/
    ```
 
 3. **Restart GNOME Shell:**
@@ -22,8 +24,9 @@ Click the IP address to copy it to your clipboard.
    - On Wayland: Log out and log back in
 
 4. **Enable the extension:**
+
    ```bash
-   gnome-extensions enable local-ip-address@mohamedami
+   gnome-extensions enable local-ip@mradime
    ```
 
    Or use GNOME Extensions app (install with: `sudo dnf install gnome-extensions-app`)
@@ -31,6 +34,7 @@ Click the IP address to copy it to your clipboard.
 ### Method 2: Pack and Install as ZIP
 
 1. **Pack the extension:**
+
    ```bash
    cd local-ip-extension
    gnome-extensions pack \
@@ -40,14 +44,16 @@ Click the IP address to copy it to your clipboard.
    ```
 
    Or manually create a ZIP:
+
    ```bash
    cd local-ip-extension
-   zip -r ../local-ip-address@mohamedami.shell-extension.zip metadata.json extension.js
+   zip -r ../local-ip@mradime.shell-extension.zip metadata.json extension.js
    ```
 
 2. **Install the packed extension:**
+
    ```bash
-   gnome-extensions install local-ip-address@mohamedami.shell-extension.zip
+   gnome-extensions install local-ip@mradime.shell-extension.zip
    ```
 
 3. **Restart GNOME Shell and enable** (same as Method 1, steps 3-4)
@@ -55,16 +61,19 @@ Click the IP address to copy it to your clipboard.
 ## Troubleshooting
 
 **Check if extension is installed:**
+
 ```bash
 gnome-extensions list
 ```
 
 **Check extension status:**
+
 ```bash
-gnome-extensions info local-ip-address@mohamedami
+gnome-extensions info local-ip@mradime
 ```
 
 **View extension logs:**
+
 ```bash
 journalctl -f /usr/bin/gnome-shell
 ```
@@ -72,13 +81,15 @@ journalctl -f /usr/bin/gnome-shell
 Or use Looking Glass (Alt + F2, then type 'lg' and press Enter)
 
 **Disable extension:**
+
 ```bash
-gnome-extensions disable local-ip-address@mohamedami
+gnome-extensions disable local-ip@mradime
 ```
 
 **Uninstall extension:**
+
 ```bash
-gnome-extensions uninstall local-ip-address@mohamedami
+gnome-extensions uninstall local-ip@mradime
 ```
 
 ## Features
@@ -93,7 +104,9 @@ gnome-extensions uninstall local-ip-address@mohamedami
 ## Customization
 
 You can modify the update interval in `extension.js` by changing this line:
+
 ```javascript
 this._timeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 10, () => {
 ```
+
 Change `10` to your preferred number of seconds.
