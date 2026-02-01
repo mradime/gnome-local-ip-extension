@@ -1,0 +1,83 @@
+╔══════════════════════════════════════════════════════════════╗
+║   Local IP Address GNOME Extension - Quick Start Guide      ║
+╚══════════════════════════════════════════════════════════════╝
+
+🎯 EASIEST WAY TO INSTALL (3 steps):
+
+1. Extract these files anywhere on your system
+
+2. Open a terminal in the extension folder and run:
+   ./install.sh
+
+3. Restart GNOME Shell:
+   • X11: Press Alt+F2, type 'r', press Enter
+   • Wayland: Log out and log back in
+
+4. Enable the extension:
+   gnome-extensions enable local-ip-address@mohamedami
+
+That's it! Your IP address will appear in the top panel.
+
+
+📦 WHAT'S INCLUDED:
+
+• extension.js      - Main extension code
+• metadata.json     - Extension metadata
+• install.sh        - Automated installation script
+• README.md         - Detailed documentation
+
+
+🎨 WHAT IT DOES:
+
+✓ Shows your local IPv4 or IPv6 address in the top panel
+✓ Prioritizes IPv4 when both are available
+✓ Click the IP to copy it to clipboard
+✓ Shows "IP Address Copied" notification
+✓ Updates every 10 seconds
+✓ Ignores loopback and Docker interfaces
+
+
+🔧 MANUAL INSTALLATION (if script doesn't work):
+
+mkdir -p ~/.local/share/gnome-shell/extensions/local-ip-address@mohamedami
+cp metadata.json extension.js ~/.local/share/gnome-shell/extensions/local-ip-address@mohamedami/
+# Then restart GNOME Shell and enable as above
+
+
+📚 USEFUL COMMANDS:
+
+List all extensions:
+  gnome-extensions list
+
+Check extension status:
+  gnome-extensions info local-ip-address@mohamedami
+
+Disable extension:
+  gnome-extensions disable local-ip-address@mohamedami
+
+View logs:
+  journalctl -f /usr/bin/gnome-shell
+
+
+💡 TIPS:
+
+• The extension updates your IP every 10 seconds
+• If you don't see it, check journalctl for errors
+• Make sure you have 'ip' command available (iproute2 package)
+• On Fedora, you might need: sudo dnf install gnome-extensions-app
+
+
+❓ TROUBLESHOOTING:
+
+Extension not showing after restart?
+  → Check: gnome-extensions list | grep local-ip
+
+Extension showing but disabled?
+  → Run: gnome-extensions enable local-ip-address@mohamedami
+
+Shows "Error" or "No IP"?
+  → Check: ip -o addr show scope global
+  → Make sure you're connected to a network
+
+
+Enjoy your new extension! 🎉

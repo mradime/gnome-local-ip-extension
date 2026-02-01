@@ -1,0 +1,10 @@
+{
+  "name": "Local IP Address",
+  "description": "Shows your local IPv4/IPv6 address in the top panel. Click to copy.",
+  "uuid": "local-ip@mradime",
+  "shell-version": [
+    "49"
+  ],
+  "version": 1,
+  "url": "https://github.com/mradime/gnome-local-ip-extension"
+}
