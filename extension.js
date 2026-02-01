@@ -33,30 +33,71 @@ class IPIndicator extends PanelMenu.Button {
 
     _updateIP() {
         try {
-            // Execute ip command to get network addresses
-            let [success, stdout, stderr] = GLib.spawn_command_line_sync(
-                'ip -o addr show scope global'
-            );
-
-            if (success) {
-                let output = new TextDecoder().decode(stdout);
-                let ip = this._parseIPAddress(output);
-                
-                if (ip) {
-                    this._currentIP = ip;
-                    this._label.set_text(ip);
-                } else {
-                    this._currentIP = null;
-                    this._label.set_text('No IP');
-                }
+            // Try multiple methods to get IP address
+            let ip = this._getIPFromHostname() || this._getIPFromIpCommand();
+            
+            if (ip) {
+                this._currentIP = ip;
+                this._label.set_text(ip);
             } else {
                 this._currentIP = null;
-                this._label.set_text('Error');
+                this._label.set_text('No IP');
+                // Log for debugging
+                console.log('[Local IP] No IP address found');
             }
         } catch (e) {
-            console.error('Error updating IP:', e);
+            console.error('[Local IP] Error updating IP:', e);
             this._currentIP = null;
             this._label.set_text('Error');
+        }
+    }
+
+    _getIPFromHostname() {
+        try {
+            // Method 1: Use hostname -I (simpler and more reliable)
+            let [success, stdout] = GLib.spawn_command_line_sync('hostname -I');
+            
+            if (success && stdout.length > 0) {
+                let output = new TextDecoder().decode(stdout).trim();
+                let ips = output.split(/\s+/);
+                
+                // Look for IPv4 first
+                for (let ip of ips) {
+                    if (this._isIPv4(ip)) {
+                        console.log('[Local IP] Found IPv4 via hostname:', ip);
+                        return ip;
+                    }
+                }
+                
+                // Fall back to IPv6 if no IPv4
+                for (let ip of ips) {
+                    if (this._isIPv6(ip)) {
+                        console.log('[Local IP] Found IPv6 via hostname:', ip);
+                        return ip;
+                    }
+                }
+            }
+        } catch (e) {
+            console.log('[Local IP] hostname -I failed:', e);
+        }
+        
+        return null;
+    }
+
+    _getIPFromIpCommand() {
+        try {
+            // Method 2: Parse ip addr output
+            let [success, stdout] = GLib.spawn_command_line_sync('ip addr show');
+            
+            if (!success) {
+                return null;
+            }
+            
+            let output = new TextDecoder().decode(stdout);
+            return this._parseIPAddress(output);
+        } catch (e) {
+            console.log('[Local IP] ip addr failed:', e);
+            return null;
         }
     }
 
@@ -64,28 +105,65 @@ class IPIndicator extends PanelMenu.Button {
         let lines = output.split('\n');
         let ipv4 = null;
         let ipv6 = null;
+        let currentInterface = null;
 
         for (let line of lines) {
-            // Skip loopback and docker interfaces
-            if (line.includes('lo') || line.includes('docker') || line.includes('veth')) {
+            // Track current interface
+            if (line.match(/^\d+:/)) {
+                let ifaceMatch = line.match(/^\d+:\s+(\S+):/);
+                if (ifaceMatch) {
+                    currentInterface = ifaceMatch[1];
+                }
+            }
+
+            // Skip loopback, docker, and virtual interfaces
+            if (currentInterface && (
+                currentInterface === 'lo' ||
+                currentInterface.startsWith('docker') ||
+                currentInterface.startsWith('veth') ||
+                currentInterface.startsWith('br-') ||
+                currentInterface.startsWith('virbr')
+            )) {
                 continue;
             }
 
             // Match IPv4 address (inet)
             let ipv4Match = line.match(/inet\s+(\d+\.\d+\.\d+\.\d+)/);
             if (ipv4Match && !ipv4) {
-                ipv4 = ipv4Match[1];
+                let ip = ipv4Match[1];
+                // Skip link-local IPv4 (169.254.x.x)
+                if (!ip.startsWith('169.254.')) {
+                    ipv4 = ip;
+                    console.log('[Local IP] Found IPv4:', ip, 'on', currentInterface);
+                }
             }
 
             // Match IPv6 address (inet6) - exclude link-local (fe80::)
             let ipv6Match = line.match(/inet6\s+([0-9a-f:]+)/);
-            if (ipv6Match && !ipv6 && !ipv6Match[1].startsWith('fe80')) {
-                ipv6 = ipv6Match[1].split('/')[0]; // Remove prefix length
+            if (ipv6Match && !ipv6) {
+                let ip = ipv6Match[1].split('/')[0];
+                if (!ip.startsWith('fe80') && !ip.startsWith('::1')) {
+                    ipv6 = ip;
+                    console.log('[Local IP] Found IPv6:', ip, 'on', currentInterface);
+                }
             }
         }
 
         // Prioritize IPv4
         return ipv4 || ipv6;
+    }
+
+    _isIPv4(ip) {
+        return /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(ip) && 
+               !ip.startsWith('127.') && 
+               !ip.startsWith('169.254.');
+    }
+
+    _isIPv6(ip) {
+        return /^[0-9a-f:]+$/.test(ip) && 
+               !ip.startsWith('fe80') && 
+               !ip.startsWith('::1') &&
+               ip.includes(':');
     }
 
     _copyToClipboard() {
